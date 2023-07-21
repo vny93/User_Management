@@ -1,13 +1,10 @@
-import React from 'react'
-import axios from 'axios';
+import React from "react";
+import axios from "./customie-axios";
 
-const fetchAllUser = () => {
+const fetchAllUser = (page) => {
   return (
-    // axios.get("https://reqres.in/api/users?page=1").then(data => {
-    //     console.log("check data: ",data)
-    // })
-    axios.get("https://reqres.in/api/users?page=1")
-  )
-}
+    axios.get(`/api/users?page=${page}`)
+  );
+};
 
-export {fetchAllUser} ;
+export { fetchAllUser };

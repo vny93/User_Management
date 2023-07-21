@@ -2,23 +2,31 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Table from "react-bootstrap/Table";
 import { fetchAllUser } from "../services/UserService";
+import ReactPaginate from "react-paginate";
 
 const TableUsers = (props) => {
   const [listtUsers, setListUsers] = useState([]);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalPage, setTotalPage] = useState(0);
 
   useEffect(() => {
     //giong ham componentDidMount
     //call api
-    getUsers();
+    getUsers(1);
   }, []);
 
-  const getUsers = async () => {
-    let res = await fetchAllUser();
-    if (res && res.data && res.data.data) {
-      setListUsers(res.data.data);
+  const getUsers = async (page) => {
+    let res = await fetchAllUser(page);
+    if (res && res.data) {
+      setTotalUsers(res.total);
+      setTotalPage(res.total_pages);
+      setListUsers(res.data); //dang le~ se~ la` res.data.data nhung o day chi can res.data thui vi da custom axios roi
     }
   };
-  console.log("check list users: ", listtUsers);
+
+  const handlePageClick = (event) => {
+    getUsers(+event.selected + 1);
+  };
 
   return (
     <>
@@ -46,6 +54,25 @@ const TableUsers = (props) => {
             })}
         </tbody>
       </Table>
+      {/* phan trang */}
+      <ReactPaginate
+        breakLabel="..."
+        nextLabel="next >"
+        onPageChange={handlePageClick}
+        pageRangeDisplayed={5}
+        pageCount={totalPage}
+        previousLabel="< previous"
+        pageClassName="page-item"
+        pageLinkClassName="page-link"
+        previousClassName="page-item"
+        previousLinkClassName="page-link"
+        nextLinkClassName="page-link"
+        nextClassName="page-item"
+        breakClassName="page-item"
+        breakLinkClassName="page-link"
+        containerClassName="pagination"
+        activeClassName="active"
+      />
     </>
   );
 };
