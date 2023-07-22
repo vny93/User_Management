@@ -10,7 +10,8 @@ const instance = axios.create({
 instance.interceptors.response.use(
   function (response) {
     //custom lai response.data cho nay
-    return response.data;
+    //se co TH response.data kh tra ve data nen minh se them if else nhe'
+    return response.data ? response.data : {statusCode: response.status};
   },
   function (error) {
     return Promise.reject(error);
