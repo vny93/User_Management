@@ -4,6 +4,8 @@ import Table from "react-bootstrap/Table";
 import { fetchAllUser } from "../services/UserService";
 import ReactPaginate from "react-paginate";
 import ModalAddNew from "./ModalAddnew";
+import ModalEditUser from "./ModalEditUser";
+import _ from "lodash";
 
 const TableUsers = (props) => {
   const [listUsers, setListUsers] = useState([]);
@@ -11,12 +13,26 @@ const TableUsers = (props) => {
   const [totalPage, setTotalPage] = useState(0);
 
   const [isShowModalAddNew, setIsShowModalAddNew] = useState(false);
+  const [isShowModalEdit, setIsShowModalEdit] = useState(false);
+  const [dataUserEdit, setDataUserEdit] = useState({});
+
   const handleClose = () => {
     setIsShowModalAddNew(false);
+    setIsShowModalEdit(false);
   };
 
   const handleUpdateTable = (user) => {
     setListUsers([user, ...listUsers]);
+  };
+
+  const handleEditUserFromModal = (user) => {
+    // let cloneListUsers = [...listUsers]; //tao 1 bien moi de co the update user moi vi th listUsers la 1 bien const (hang so) nen ko the update
+    let cloneListUsers = _.cloneDeep(listUsers); //de bien cloneListUsers tro~ toi bo nho khac, neu kh co thi` no' se luu cung bo nho voi listUsers
+    let index = listUsers.findIndex((item) => item.id === user.id);
+    cloneListUsers[index].first_name = user.first_name;
+    setListUsers(cloneListUsers);
+    //phai xu li nhu tren vi api update cua ngta kh luu vao DB
+    //thuc te khi lam voi api luu vao DB thi chi can call api get list lai la` xong
   };
 
   useEffect(() => {
@@ -36,6 +52,12 @@ const TableUsers = (props) => {
 
   const handlePageClick = (event) => {
     getUsers(+event.selected + 1);
+  };
+
+  const handleEdtiUser = (user) => {
+    console.log("check user:", user);
+    setDataUserEdit(user);
+    setIsShowModalEdit(true);
   };
 
   return (
@@ -72,7 +94,12 @@ const TableUsers = (props) => {
                   <td>{item.first_name}</td>
                   <td>{item.last_name}</td>
                   <td>
-                    <button className="btn btn-warning mx-4">Edit</button>
+                    <button
+                      className="btn btn-warning mx-4"
+                      onClick={() => handleEdtiUser(item)}
+                    >
+                      Edit
+                    </button>
                     <button className="btn btn-danger">Delete</button>
                   </td>
                 </tr>
@@ -106,6 +133,12 @@ const TableUsers = (props) => {
       />{" "}
       {/* sd arrow funtion de kh bi loop vo han */}
       {/* do ban chat funtion cua th react moi lan render lai la no' moi' toanh nhu chua update nen no render lien tuc   */}
+      <ModalEditUser
+        show={isShowModalEdit}
+        dataUserEdit={dataUserEdit}
+        handleClose={handleClose}
+        handleEditUserFromModal={handleEditUserFromModal}
+      />
     </>
   );
 };
