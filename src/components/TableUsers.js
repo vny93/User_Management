@@ -5,7 +5,7 @@ import ReactPaginate from "react-paginate";
 import ModalAddNew from "./ModalAddnew";
 import ModalEditUser from "./ModalEditUser";
 import ModalConfirm from "./ModalConfirm";
-import _ from "lodash";
+import _, { debounce } from "lodash";
 import "./TableUsers.scss";
 
 const TableUsers = (props) => {
@@ -22,6 +22,8 @@ const TableUsers = (props) => {
 
   const [sortBy, setSortBy] = useState("asc");
   const [sortField, setSortField] = useState("id");
+
+  //const[keyword, setKeyword] = useState(""); //khi nao sd button search thi su state nay, con minh dang search nhung' nen kh can
 
   const handleClose = () => {
     setIsShowModalAddNew(false);
@@ -88,6 +90,22 @@ const TableUsers = (props) => {
     setListUsers(cloneListUsers)
   }
 
+  const handleSearch = debounce((event) => {
+     let term = event.target.value;
+     console.log(term);
+     if(term){
+      console.log("vo 1");
+      console.log("term",term);
+        let cloneListUsers = _.cloneDeep(listUsers);
+        cloneListUsers = cloneListUsers.filter((item) => item.email.includes(term));
+        setListUsers(cloneListUsers);//neu setList nay thi` khi minh search kq kh co' thi` listUsers dc gan' = rong, nen khi minh search lai thi` no' se~ ko tim dc
+      //do minh` kh co' api de call, sau nay chi can call api va` search thui la` dc
+      }else{
+      console.log("vo 2");
+      getUsers(1);
+     }
+  },500) //sd debounce de kh bi goi api lien tuc khi search, 500ms goi 1 lan
+
   return (
     <>
       <div className="my-3 add-new">
@@ -100,6 +118,12 @@ const TableUsers = (props) => {
         >
           Add new user
         </button>
+      </div>
+      <div className="col-4 my-3">
+        <input className="form-control"
+        placeholder="Search user by email..."
+        //value={keyword}
+        onChange={(event) => handleSearch(event)}/>
       </div>
       <Table striped bordered hover>
         <thead>
