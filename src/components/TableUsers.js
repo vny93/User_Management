@@ -7,6 +7,7 @@ import ModalEditUser from "./ModalEditUser";
 import ModalConfirm from "./ModalConfirm";
 import _, { debounce } from "lodash";
 import "./TableUsers.scss";
+import { CSVLink } from "react-csv";
 
 const TableUsers = (props) => {
   const [listUsers, setListUsers] = useState([]);
@@ -22,6 +23,8 @@ const TableUsers = (props) => {
 
   const [sortBy, setSortBy] = useState("asc");
   const [sortField, setSortField] = useState("id");
+
+  const [dataExport, setDataExport] = useState([]);
 
   //const[keyword, setKeyword] = useState(""); //khi nao sd button search thi su state nay, con minh dang search nhung' nen kh can
 
@@ -83,28 +86,44 @@ const TableUsers = (props) => {
   };
 
   const handleSort = (sortBy, sortField) => {
-    setSortBy(sortBy)
-    setSortField(sortField)
+    setSortBy(sortBy);
+    setSortField(sortField);
     let cloneListUsers = _.cloneDeep(listUsers);
     cloneListUsers = _.orderBy(cloneListUsers, [sortField], [sortBy]);
-    setListUsers(cloneListUsers)
-  }
+    setListUsers(cloneListUsers);
+  };
 
   const handleSearch = debounce((event) => {
-     let term = event.target.value;
-     console.log(term);
-     if(term){
-      console.log("vo 1");
-      console.log("term",term);
-        let cloneListUsers = _.cloneDeep(listUsers);
-        cloneListUsers = cloneListUsers.filter((item) => item.email.includes(term));
-        setListUsers(cloneListUsers);//neu setList nay thi` khi minh search kq kh co' thi` listUsers dc gan' = rong, nen khi minh search lai thi` no' se~ ko tim dc
+    let term = event.target.value;
+    console.log(term);
+    if (term) {
+      let cloneListUsers = _.cloneDeep(listUsers);
+      cloneListUsers = cloneListUsers.filter((item) =>
+        item.email.includes(term)
+      );
+      setListUsers(cloneListUsers); //neu setList nay thi` khi minh search kq kh co' thi` listUsers dc gan' = rong, nen khi minh search lai thi` no' se~ ko tim dc
       //do minh` kh co' api de call, sau nay chi can call api va` search thui la` dc
-      }else{
-      console.log("vo 2");
+    } else {
       getUsers(1);
-     }
-  },500) //sd debounce de kh bi goi api lien tuc khi search, 500ms goi 1 lan
+    }
+  }, 500); //sd debounce de kh bi goi api lien tuc khi search, 500ms goi 1 lan
+
+  const getUsersExport = (event, done) => {
+      let result = [];
+      if(listUsers && listUsers.length > 0){
+        result.push(["ID", "Email", "First Name", "Last Name"]);
+        listUsers.map((item,index) => {
+          let arr = [];
+          arr[0] = item.id;
+          arr[1] = item.email; 
+          arr[2] = item.first_name;
+          arr[3] = item.last_name;
+          result.push(arr);
+        })
+        setDataExport(result);
+        done();
+      }
+  }
 
   return (
     <>
@@ -112,18 +131,37 @@ const TableUsers = (props) => {
         <span>
           <b>List Users:</b>
         </span>
-        <button
-          className="btn btn-success"
-          onClick={() => setIsShowModalAddNew(true)}
-        >
-          Add new user
-        </button>
+
+        <div className="group-btns">
+          <label htmlFor="test" className="btn btn-warning">
+          <i className="fa-solid fa-file-import" /> Import</label>
+          <input id="test" type="file" hidden/>
+          <CSVLink
+            className="btn btn-primary"
+            filename={"users.csv"}
+            data={dataExport}
+            asyncOnClick={true}
+            onClick={getUsersExport}
+          >
+            {" "}
+            <i className="fa-solid fa-file-arrow-down" /> Export
+          </CSVLink>
+
+          <button
+            className="btn btn-success"
+            onClick={() => setIsShowModalAddNew(true)}
+          >
+            <i className="fa-solid fa-circle-plus" /> Add new
+          </button>
+        </div>
       </div>
       <div className="col-4 my-3">
-        <input className="form-control"
-        placeholder="Search user by email..."
-        //value={keyword}
-        onChange={(event) => handleSearch(event)}/>
+        <input
+          className="form-control"
+          placeholder="Search user by email..."
+          //value={keyword}
+          onChange={(event) => handleSearch(event)}
+        />
       </div>
       <Table striped bordered hover>
         <thead>
@@ -132,12 +170,14 @@ const TableUsers = (props) => {
               <div className="sort-header">
                 <span>ID</span>
                 <span>
-                  <i className="fa-solid fa-arrow-down"
-                  onClick={()=> handleSort("desc","id")}>
-
-                  </i>
-                  <i className="fa-solid fa-arrow-up"
-                  onClick={()=> handleSort("asc","id")}></i>
+                  <i
+                    className="fa-solid fa-arrow-down"
+                    onClick={() => handleSort("desc", "id")}
+                  ></i>
+                  <i
+                    className="fa-solid fa-arrow-up"
+                    onClick={() => handleSort("asc", "id")}
+                  ></i>
                 </span>
               </div>
             </th>
@@ -146,12 +186,14 @@ const TableUsers = (props) => {
               <div className="sort-header">
                 <span>First Name</span>
                 <span>
-                  <i className="fa-solid fa-arrow-down"
-                  onClick={()=> handleSort("desc","first_name")}>
-
-                  </i>
-                  <i className="fa-solid fa-arrow-up"
-                  onClick={()=> handleSort("asc","first_name")}></i>
+                  <i
+                    className="fa-solid fa-arrow-down"
+                    onClick={() => handleSort("desc", "first_name")}
+                  ></i>
+                  <i
+                    className="fa-solid fa-arrow-up"
+                    onClick={() => handleSort("asc", "first_name")}
+                  ></i>
                 </span>
               </div>
             </th>
