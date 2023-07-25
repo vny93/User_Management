@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { loginApi } from "../services/UserService";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { UserContext } from "../context/UserContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -9,6 +10,8 @@ const Login = () => {
   const [isShowPassword, setIsShowPassword] = useState(false);
   const [loadingApi, setLoadingApi] = useState(false);
   const navigate = useNavigate();
+
+  const {loginContext} = useContext(UserContext);
 
   useEffect(()=> {
    let token = localStorage.getItem("token");
@@ -25,7 +28,7 @@ const Login = () => {
     setLoadingApi(true);
     let res = await loginApi(email, password);
     if (res && res.token) {
-      localStorage.setItem("token", res.token);
+      loginContext(email,res.token);
       navigate("/")
     } else {
       if (res && res.status === 400) {
@@ -34,6 +37,10 @@ const Login = () => {
     }
     setLoadingApi(false);
   };
+
+  const handleGoBack = () => {
+    navigate("/")
+  }
 
   return (
     <div className="login-container col-12 col-sm-4">
@@ -73,7 +80,8 @@ const Login = () => {
       </button>
 
       <div className="back">
-        <i className="fa-solid fa-angles-left"></i> Go back
+        <i className="fa-solid fa-angles-left"></i>
+        <span onClick={()=> handleGoBack()}>&nbsp;Go back</span>
       </div>
     </div>
   );
