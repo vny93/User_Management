@@ -26,9 +26,9 @@ const Login = () => {
       return;
     }
     setLoadingApi(true);
-    let res = await loginApi(email, password);
+    let res = await loginApi(email.trim(), password);
     if (res && res.token) {
-      loginContext(email,res.token);
+      loginContext(email.trim(),res.token);
       navigate("/")
     } else {
       if (res && res.status === 400) {
@@ -42,6 +42,12 @@ const Login = () => {
     navigate("/")
   }
 
+  const handlePressEnter = (event) => {
+    if(event && event.key === "Enter"){
+        handleLogin();
+    }
+  }
+
   return (
     <div className="login-container col-12 col-sm-4">
       <div className="title">Login</div>
@@ -52,6 +58,7 @@ const Login = () => {
         placeholder="Email or username..."
         value={email}
         onChange={(event) => setEmail(event.target.value)}
+        onKeyDown={(event) => handlePressEnter(event)}
       />
 
       <div className="input-2">
@@ -60,6 +67,7 @@ const Login = () => {
           placeholder="Password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
+          onKeyDown={(event) => handlePressEnter(event) }
         />
         <i
           className={

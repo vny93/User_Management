@@ -7,8 +7,6 @@ import Alert from 'react-bootstrap/Alert';
 const PrivateRoute = (props) => {
   const { user } = useContext(UserContext);
 
-  console.log("props:", props);
-  console.log("location:", window.location.pathname);
   if (user && !user.auth) {
     return (
       <>
