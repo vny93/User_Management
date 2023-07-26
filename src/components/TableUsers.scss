@@ -19,10 +19,31 @@
         i{
             padding: 0 2px;
         }
+
+        a.btn.btn-primary {
+            align-items: center;
+            margin-top: 20px;
+            display: flex;
+        }
+        label.btn.btn-warning {
+            align-items: center;
+            margin-top: 20px;
+            display: flex;
+        }
     }
   }
 
   ul.pagination {
     display: flex;
     justify-content: center;
+}
+
+button.btn.btn-warning.mx-4 {
+    margin-top: -3px;
+    padding: 10px;
+}
+
+button.btn.btn-danger {
+    margin-top: -3px;
+    padding: 10px;
 }

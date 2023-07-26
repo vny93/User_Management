@@ -181,7 +181,7 @@ const TableUsers = (props) => {
 
         <div className="group-btns">
           <label htmlFor="test" className="btn btn-warning">
-            <i className="fa-solid fa-file-import" /> Import
+            <i className="fa-solid fa-file-import" />&nbsp;Import
           </label>
           <input
             id="test"
@@ -197,7 +197,7 @@ const TableUsers = (props) => {
             onClick={getUsersExport}
           >
             {" "}
-            <i className="fa-solid fa-file-arrow-down" /> Export
+            <i className="fa-solid fa-file-arrow-down" />&nbsp;Export
           </CSVLink>
 
           <button
