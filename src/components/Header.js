@@ -1,4 +1,4 @@
-import React from "react";
+import { React, useEffect } from "react";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
@@ -9,18 +9,31 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useContext } from "react";
 import { UserContext } from "../context/UserContext";
+import { useDispatch, useSelector } from "react-redux";
+import { handleLogoutRedux } from "../redux/actions/userAction";
 
 const Header = (props) => {
+
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { logout, user } = useContext(UserContext);
+  // const { logout, user } = useContext(UserContext);
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.account);
 
   const handleLogout = () => {
-    logout();
-    navigate("/");
-    toast.success("Logout successfully!");
+    dispatch(handleLogoutRedux());
+    // logout();
+    // navigate("/");
+    // toast.success("Logout successfully!");
   };
+
+  useEffect(() => {//no' se co TH login sai user ma` van chay doan code nay nen phai them DK url != '/login'
+    if (user && user.auth === false && window.location.pathname !== "/login") {
+      navigate("/");
+      toast.success("Logout successfully!");
+    }
+  }, [user]);
 
   return (
     <>

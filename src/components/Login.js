@@ -4,15 +4,21 @@ import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 
+import {handleLoginRedux} from "../redux/actions/userAction";
+import { useDispatch, useSelector } from "react-redux";
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isShowPassword, setIsShowPassword] = useState(false);
-  const [loadingApi, setLoadingApi] = useState(false);
+  //const [loadingApi, setLoadingApi] = useState(false);
   const navigate = useNavigate();
 
-  const {loginContext} = useContext(UserContext);
-
+  // const {loginContext} = useContext(UserContext);
+  const dispatch = useDispatch();
+  const isLoading = useSelector((state)=> state.user.isLoading);
+  const account = useSelector((state)=> state.user.account);
+ 
   useEffect(()=> {
    let token = localStorage.getItem("token");
    if(token){
@@ -25,8 +31,11 @@ const Login = () => {
       toast.error("Email and password are required!");
       return;
     }
-    setLoadingApi(true);
-    let res = await loginApi(email.trim(), password);
+   
+
+    dispatch(handleLoginRedux(email.trim(), password));
+    /*setLoadingApi(true);
+   let res = await loginApi(email.trim(), password);
     if (res && res.token) {
       loginContext(email.trim(),res.token);
       navigate("/")
@@ -35,7 +44,9 @@ const Login = () => {
         toast.error(res.data.error);
       }
     }
-    setLoadingApi(false);
+    setLoadingApi(false);*/
+
+
   };
 
   const handleGoBack = () => {
@@ -47,6 +58,12 @@ const Login = () => {
         handleLogin();
     }
   }
+
+  useEffect(() => {
+    if(account && account.auth === true){
+      navigate("/")
+    }
+  },[account])
 
   return (
     <div className="login-container col-12 col-sm-4">
@@ -84,7 +101,7 @@ const Login = () => {
         disabled={email && password ? false : true}
         onClick={() => handleLogin()}
       >
-        {loadingApi && <i className="fa-solid fa-sync fa-spin"></i>}&nbsp;Login
+        {isLoading && <i className="fa-solid fa-sync fa-spin"></i>}&nbsp;Login
       </button>
 
       <div className="back">
